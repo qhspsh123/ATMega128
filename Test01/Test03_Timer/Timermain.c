@@ -26,7 +26,7 @@ ISR(TIMER0_OVF_vect)
 	{
 		cnt = 0;
 		cnt1++;
-		if(cnt >= cntEx)
+		if(cnt1 >= cntEx)
 		{
 			cnt1 = 0;
 			if(st) { PORT &= ~_BV(LED); st = 0; }
