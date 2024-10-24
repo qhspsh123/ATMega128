@@ -24,25 +24,30 @@ int digit(int num) // num 변수를 1000, 100, 10, 1 자릿수 추출하여 data
 	return 1;
 }
 
-volatile int st = 0;
 volatile int st2 = 0;
 volatile int i = 0;
 volatile int cnt;
 volatile int num = 0;
 volatile int min = 0;
 volatile double num2 = 0;
-volatile Idx1 = 0;
+volatile int Idx1 = 0;
 volatile int on = 0;
 volatile int TMOD = 0;
 volatile int TSET = 0;
+volatile int cnt3 = 0;
+volatile int btn3 = 0;
+
 
 ISR(INT2_vect) // 버튼3 Timer 설정
 {
+	btn3++;
 	num = 0;
 	if(TMOD == 0) 
 	{TMOD = 1; Idx1 = 0;}
 	else TMOD = 0;
-
+	if(btn3 == 2) 
+	{TMOD = 0; st2 = 0; btn3=0;
+	}
 	
 }
 ISR(INT0_vect) //버튼1 -- stop 기능
@@ -77,13 +82,14 @@ ISR(INT1_vect) //버튼 2
 		num++;
 		if(num > 59) num = 0;
 	}
-	else if(st2 == 1 && TMOD == 0)
+	else if(btn3==0)
 	{
 		min++;
 		num = (min*100) + (num%100);
 		if(min > 59) min = 0;
 	}
-	
+	cnt3++;
+	if (on == 0 && cnt3==3) st2=0; //GPIO- 부저 off자리
 }
 
 volatile int cnt2=0;
@@ -106,19 +112,15 @@ ISR(TIMER0_COMP_vect)		//비교일치 인터럽트
 					if(num == 0)
 					{
 						on=0;
-						TMOD;
-						st=0;
-						st2=0;
-						//GPIO- 부저 자리
-						for (int k = 0; k<100; k++)
-						{
-							
-						}
+						st2=1;
+						TMOD = 0;
+						//GPIO- 부저 on자리
+						
 					}
 				}
 				else if(st2 == 0)
 				{
-					if((num%100) == 59) num= num+40;
+					if((num%100) == 59) num= num+41;
 					else num++;
 				}
 				if (st2 == 1) ;
